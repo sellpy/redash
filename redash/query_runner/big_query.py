@@ -16,7 +16,7 @@ from redash.query_runner import (
     JobTimeoutException,
     register,
 )
-from redash.utils import json_loads
+from redash.utils import json_dumps, json_loads
 
 logger = logging.getLogger(__name__)
 
@@ -318,6 +318,7 @@ class BigQuery(BaseQueryRunner):
         if error is not None:
             self._handle_run_query_error(error)
 
+        results = json_loads(results)
         for row in results["rows"]:
             table_name = "{0}.{1}".format(row["table_schema"], row["table_name"])
             if table_name not in schema:
@@ -345,8 +346,9 @@ class BigQuery(BaseQueryRunner):
             data = self._get_query_result(jobs, query)
             error = None
 
+            json_data = json_dumps(data, ignore_nan=True)
         except apiclient.errors.HttpError as e:
-            data = None
+            json_data = None
             if e.resp.status in [400, 404]:
                 error = json_loads(e.content)["error"]["message"]
             else:
@@ -361,7 +363,7 @@ class BigQuery(BaseQueryRunner):
 
             raise
 
-        return data, error
+        return json_data, error
 
 
 register(BigQuery)
