@@ -11,17 +11,17 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1
 RUN useradd -m -d /frontend redash
 USER redash
 
+# Avoid issues caused by lags in disk and network I/O speeds when working on top of QEMU emulation for multi-platform image building.
+RUN yarn config set network-timeout 300000
+
 WORKDIR /frontend
-COPY --chown=redash package.json yarn.lock .yarnrc /frontend/
+COPY --chown=redash package.json yarn.lock .yarnrc .yarn/releases/ /frontend/
 COPY --chown=redash viz-lib /frontend/viz-lib
 COPY --chown=redash scripts /frontend/scripts
 
 # Controls whether to instrument code for coverage information
 ARG code_coverage
 ENV BABEL_ENV=${code_coverage:+test}
-
-# Avoid issues caused by lags in disk and network I/O speeds when working on top of QEMU emulation for multi-platform image building.
-RUN yarn config set network-timeout 300000
 
 RUN if [ "x$skip_frontend_build" = "x" ] ; then yarn --frozen-lockfile --network-concurrency 1; fi
 

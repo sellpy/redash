@@ -42,6 +42,7 @@ import useDeleteVisualization from "./hooks/useDeleteVisualization";
 import useUpdateQuery from "./hooks/useUpdateQuery";
 import useUpdateQueryDescription from "./hooks/useUpdateQueryDescription";
 import useUnsavedChangesAlert from "./hooks/useUnsavedChangesAlert";
+import QueryHelpBot from "./components/QueryHelpBot";
 
 import "./components/QuerySourceDropdown"; // register QuerySourceDropdown
 import "./QuerySource.less";
@@ -193,6 +194,7 @@ function QuerySource(props) {
 
   return (
     <div className={cx("query-page-wrapper", { "query-fixed-layout": !isMobile })}>
+      <QueryHelpBot queryText={query.query} />
       <QuerySourceAlerts query={query} dataSourcesAvailable={!dataSourcesLoaded || dataSources.length > 0} />
       <div className="container w-100 p-b-10">
         <QueryPageHeader
